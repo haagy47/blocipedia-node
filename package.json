@@ -1,0 +1,22 @@
+{
+  "name": "blocipedia",
+  "version": "1.0.0",
+  "description": "An application to share wikis.",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "export NODE_ENV=test && jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haagy47/blocipedia-node.git"
+  },
+  "keywords": [
+    "wiki"
+  ],
+  "author": "Emily Haag",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haagy47/blocipedia-node/issues"
+  },
+  "homepage": "https://github.com/haagy47/blocipedia-node#readme"
+}

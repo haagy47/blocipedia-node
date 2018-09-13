@@ -17,7 +17,7 @@
   "author": "Emily Haag",
   "license": "ISC",
   "engines": {
-    "node": "^8.11.3",
+    "node": "^8.12.0",
     "npm": "^6.2.0"
   },
   "bugs": {

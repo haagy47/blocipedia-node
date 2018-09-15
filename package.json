@@ -16,10 +16,6 @@
   ],
   "author": "Emily Haag",
   "license": "ISC",
-  "engines": {
-    "node": "^8.11.3",
-    "npm": "^6.2.0"
-  },
   "bugs": {
     "url": "https://github.com/haagy47/blocipedia-node/issues"
   },

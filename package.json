@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/haagy47/blocipedia-node#readme",
   "devDependencies": {
+    "faker": "^4.1.0",
     "jasmine": "^3.2.0",
     "request": "^2.88.0"
   },

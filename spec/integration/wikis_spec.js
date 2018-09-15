@@ -9,22 +9,31 @@ describe("routes : wikis", () => {
 
   beforeEach((done) => {
     this.wiki;
+    this.user;
+
     sequelize.sync({force: true}).then((res) => {
-
-     Wiki.create({
-       title: "JS Frameworks",
-       body: "There is a lot of them",
-       private: false
-     })
-      .then((wiki) => {
-        this.wiki = wiki;
-        done();
-      })
-      .catch((err) => {
-        console.log(err);
-        done();
-      });
-
+      User.create({
+         username: "broncos5",
+         email: "starman@tesla.com",
+         password: "Trekkie4lyfe"
+       })
+       .then((user) => {
+         this.user = user;
+         Wiki.create({
+           title: "JS Frameworks",
+           body: "There is a lot of them",
+           private: false,
+           userId: this.user.id
+         })
+          .then((wiki) => {
+            this.wiki = wiki;
+            done();
+          })
+          .catch((err) => {
+            console.log(err);
+            done();
+          });
+       })
     });
 
   });
@@ -60,7 +69,8 @@ describe("routes : wikis", () => {
        url: `${base}create`,
        form: {
          title: "blink-182 songs",
-         body: "What's your favorite blink-182 song?"
+         body: "What's your favorite blink-182 song?",
+         private: false
        }
      };
 

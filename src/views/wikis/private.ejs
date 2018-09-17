@@ -8,9 +8,10 @@
       <% include ../static/partials/navbar.ejs %>
 
       <h1>My Private Wikis</h1>
-      <p>You are not authorized to view private wikis. Please upgrade your account </p>
       <% if(currentUser && currentUser.role !== 'standard') { %>
         <a href="/wikis/new" class="btn btn-success">Create Wiki</a>
+      <% } else { %>
+        <p>You are not authorized to view private wikis. Please upgrade your account. </p> 
       <% } %>
       <hr>
       <ul class="list-group">

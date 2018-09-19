@@ -3,7 +3,6 @@ const markdown = require( "markdown" ).markdown;
 
 module.exports = {
   index(req, res, next){
-    console.log( markdown.toHTML( "Hello *World*!" ) );
     wikiQueries.getAllWikis((err, wikis) => {
         if(err){
           res.redirect(500, "static/index");

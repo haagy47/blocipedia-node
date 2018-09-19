@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../static/partials/head.ejs %>
+  </head>
+  <body>
+    <% include ../static/partials/navbar.ejs %>
+
+    <main class="container">
+      <div class="collaborators">
+
+        <h1>Collaborators</h1>
+        <form style="width:50%" action="/wikis/<%= wiki.id %>/collaborators/create" method="post">
+          <div class="input-group">
+            <input type="text" class="form-control" name="collaborator" placeholder="Enter username">
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <hr>
+        <p>Current Collaborators</p>
+        <ul class="list-group">
+          <% collaborators.forEach((collaborator) => { %>
+            <li class="list-group-item">
+              <p> <%= collaborator.userId %> </p>
+            </li>
+          <% }) %>
+        </ul>
+
+      </div>
+    </main>
+
+    <% include ../static/partials/baseScripts.ejs %>
+
+  </body>
+</html>

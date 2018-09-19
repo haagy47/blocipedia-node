@@ -1,4 +1,5 @@
 const wikiQueries = require("../db/queries.wikis.js");
+const Authorizer = require("../policies/application");
 const markdown = require( "markdown" ).markdown;
 
 module.exports = {
@@ -40,14 +41,24 @@ module.exports = {
      });
    },
    show(req, res, next){
-     wikiQueries.getWiki(req.params.id, (err, wiki) => {
+     wikiQueries.getWiki(req.params.id, (err, result) => {
+       wiki = result["wiki"];
+       collaborators = result["collaborators"];
+       if(err || wiki == null){
+         res.redirect(404, "/");
+       } else {
+         wiki.body = markdown.toHTML(wiki.body);
+         res.render("wikis/show", {wiki, collaborators});
+       }
+     });
+     /*wikiQueries.getWiki(req.params.id, (err, wiki) => {
        if(err || wiki == null){
          res.redirect(404, "/");
        } else {
          wiki.body = markdown.toHTML(wiki.body);
          res.render("wikis/show", {wiki});
        }
-     });
+     });*/
    },
    destroy(req, res, next){
      wikiQueries.deleteWiki(req.params.id, (err, wiki) => {
@@ -60,10 +71,12 @@ module.exports = {
    },
    edit(req, res, next){
      wikiQueries.getWiki(req.params.id, (err, wiki) => {
+       wiki = result["wiki"];
+       collaborators = result["collaborators"];
        if(err || wiki == null){
          res.redirect(404, "/");
        } else {
-         res.render("wikis/edit", {wiki});
+         res.render("wikis/edit", {wiki, collaborators});
        }
      });
    },

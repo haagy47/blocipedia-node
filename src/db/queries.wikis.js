@@ -28,13 +28,72 @@ module.exports = {
     })
   },
   getWiki(id, callback){
-    return Wiki.findById(id)
+      let result = {};
+    	return Wiki.findById(id)
+    	.then((wiki) => {
+       	  if(!wiki) {
+         	callback(404);
+     	  } else {
+        	  result["wiki"] = wiki;
+        	  Collaborator.scope({method: ["collaboratorsFor", id]}).all()
+        	  .then((collaborators) => {
+         	  result["collaborators"] = collaborators;
+          	  callback(null, result);
+            })
+            .catch((err) => {
+              callback(err);
+          })
+        }
+      })
+      .catch((err) => {
+        callback(err);
+      })
+     /*return Wiki.findById(id)
      .then((wiki) => {
        callback(null, wiki);
      })
      .catch((err) => {
        callback(err);
+     })*/
+  },
+  getWikiCollaborators(id, callback){
+    let result = {};
+    	return Wiki.findById(id)
+    	.then((wiki) => {
+       	  if(!wiki) {
+         	callback(404);
+     	  } else {
+        	  result["wiki"] = wiki;
+        	  Collaborator.scope({method: ["collaboratorsFor", id]}).all()
+        	  .then((collaborators) => {
+         	  result["collaborators"] = collaborators;
+          	  callback(null, result);
+            })
+            .catch((err) => {
+              callback(err);
+          })
+        }
+      })
+      .catch((err) => {
+        callback(err);
+      })
+    /*let result = {};
+    Wiki.findById(id)
+     .then((wiki) => {
+       if(!wiki) {
+         callback(404, "Wiki not found")
+       } else {
+         result['wiki'] = wiki;
+         Collaborator.scope({method: ["collaboratorsFor", id]}).all()
+         .then((collaborators)) => {
+           result['collaborators'] = collaborators;
+           callback(null, result);
+         }
+       }
      })
+     .catch((err) => {
+       callback(err);
+     })*/
   },
   deleteWiki(id, callback){
      return Wiki.destroy({

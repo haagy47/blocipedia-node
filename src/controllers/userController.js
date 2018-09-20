@@ -76,12 +76,23 @@ module.exports = {
       })
    },
    seeUpgradeSuccess(req, res, next){
-     res.render("users/upgrade-success");
+      res.render("users/upgrade-success");
    },
    downgrade(req, res, next){
-     userQueries.downgrade(req.user.dataValues.id);
-     wikiQueries.togglePrivate(req.user.dataValues.id);
-     req.flash("notice", "You've successfully downgraded your account!");
-     res.redirect("/");
-   }
+       userQueries.downgrade(req.user.dataValues.id);
+       wikiQueries.togglePrivate(req.user.dataValues.id);
+       req.flash("notice", "You've successfully downgraded your account!");
+       res.redirect("/");
+   },
+   showCollaborations(req, res, next){
+     userQueries.getUser(req.user.id, (err, result) => {
+        user = result["user"];
+        collaborations = result["collaborations"];
+        if(err || user == null){
+          res.redirect(404, "/");
+        } else {
+          res.render("users/collaborations", {user, collaborations});
+        }
+    });
+  }
 }

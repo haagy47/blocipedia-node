@@ -40,26 +40,20 @@ module.exports = {
        }
      });
    },
-   show(req, res, next){
+   show(req, res, next) {
+
      wikiQueries.getWiki(req.params.id, (err, result) => {
-       wiki = result["wiki"];
-       collaborators = result["collaborators"];
-       if(err || wiki == null){
-         res.redirect(404, "/");
-       } else {
-         wiki.body = markdown.toHTML(wiki.body);
-         res.render("wikis/show", {wiki, collaborators});
-       }
-     });
-     /*wikiQueries.getWiki(req.params.id, (err, wiki) => {
-       if(err || wiki == null){
-         res.redirect(404, "/");
-       } else {
-         wiki.body = markdown.toHTML(wiki.body);
-         res.render("wikis/show", {wiki});
-       }
-     });*/
-   },
+        wiki = result["wiki"];
+        collaborators = result["collaborators"];
+
+        if(err || wiki == null){
+          res.redirect(404, "/");
+        } else {
+          wiki.body = markdown.toHTML(wiki.body);
+          res.render("wikis/show", {wiki});
+        }
+      });
+    },
    destroy(req, res, next){
      wikiQueries.deleteWiki(req.params.id, (err, wiki) => {
        if(err){
@@ -69,17 +63,27 @@ module.exports = {
        }
      });
    },
-   edit(req, res, next){
-     wikiQueries.getWiki(req.params.id, (err, wiki) => {
-       wiki = result["wiki"];
-       collaborators = result["collaborators"];
-       if(err || wiki == null){
-         res.redirect(404, "/");
-       } else {
-         res.render("wikis/edit", {wiki, collaborators});
-       }
-     });
-   },
+   edit(req, res, next) {
+
+      wikiQueries.getWiki(req.params.id, (err, result) => {
+
+        wiki = result["wiki"];
+        collaborators = result["collaborators"];
+
+        if(err || wiki == null){
+            res.redirect(404, "/");
+        } else {
+            const authorized = new Authorizer(req.user, wiki, collaborators).edit();
+
+            if(authorized){
+                res.render("wikis/edit", {wiki, collaborators});
+            } else {
+                req.flash("notice", "You are not authorized to do that.");
+                res.redirect(`/wikis/${req.params.id}`)
+            }
+        }
+      });
+  },
    update(req, res, next){
      wikiQueries.updateWiki(req.params.id, req.body, (err, wiki) => {
        if(err || wiki == null){

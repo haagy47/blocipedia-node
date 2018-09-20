@@ -1,33 +1,12 @@
-const Collaborator = require("./models").Collaborator;
-const Wiki = require("./models").Wiki;
-const User = require("./models").User;
-
-const Authorizer = require("../policies/collaborator");
+const Authorizer = require("../policies/application");
+const User = require('./models').User;
+const Wiki = require('./models').Wiki;
+const Collaborator = require('./models').Collaborator;
 
 module.exports = {
 
-  getCollaborators(id, callback) {
-    let result = {};
-    Wiki.findById(id)
-    .then((wiki) => {
-      if(!wiki) {
-        callback(404);
-      } else {
-        result["wiki"] = wiki;
-        Collaborator.scope({method: ["collaboratorsFor", id]}).all()
-        .then((collaborators) => {
-          result["collaborators"] = collaborators;
-          callback(null, result);
-          })
-          .catch((err) => {
-            callback(err);
-          })
-      }
-    })
-  },
-
-  createCollaborator(req, callback){
-      User.findOne({
+    createCollaborator(req, callback){
+        User.findOne({
         where: {
           username: req.body.collaborator
         }
@@ -45,7 +24,7 @@ module.exports = {
         .then((collaborator) => {
           if(collaborator) {
             console.log('error! This collaborator already exists');
-            return callback('This collaborator is already a collaborator on this wiki.')
+            return callback('This user is already a collaborator on this wiki.')
           }
           let newCollaborator = {
             userId: user.id,
@@ -64,18 +43,27 @@ module.exports = {
   },
 
   deleteCollaborator(req, callback){
-    return Collaborator.findById(req.params.id)
-    .then((collaborator) => {
-      const authorized = new Authorizer(req.user, collaborator).destroy();
+    let userId = req.body.collaborator;
+    let wikiId = req.params.wikiId;
+    const authorized = new Authorizer(req.user, wiki, userId).destroy();
 
-      if(authorized){
-        collaborator.destroy();
-        callback(null, collaborator)
-      } else {
+    if(authorized){
+      Collaborator.destroy({
+          where: {
+            userId: userId,
+            wikiId: wikiId
+          }
+        })
+        .then((deletedRecordsCount) => {
+          callback(null, deletedRecordsCount);
+        })
+        .catch((err) => {
+          callback(err);
+        });
+    } else {
         req.flash("notice", "You are not authorized to do that.")
-        callback(401)
-      }
-    })
-  },
+        callback(401);
+    }
+  }
 
 }

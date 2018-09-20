@@ -27,83 +27,40 @@ module.exports = {
   },
 
   createCollaborator(req, callback){
-    if (req.user.username == req.body.collaborator){
-          return callback("Cannot add yourself to collaborators!");
+      User.findOne({
+        where: {
+          username: req.body.collaborator
         }
-        User.findAll({
+      })
+      .then((user) => {
+        if(!user){
+          return callback("User does not exist")
+        }
+        Collaborator.findOne({
           where: {
-            username: req.body.collaborator
+            userId: user.id,
+            wikiId: req.params.wikiId
           }
         })
-        .then((users)=>{
-          if(!users[0]){
-            return callback("User not found.");
+        .then((collaborator) => {
+          if(collaborator) {
+            console.log('error! This collaborator already exists');
+            return callback('This collaborator is already a collaborator on this wiki.')
           }
-          Collaborator.findAll({
-            where: {
-              userId: users[0].id,
-              wikiId: req.params.wikiId,
-            }
+          let newCollaborator = {
+            userId: user.id,
+            wikiId: req.params.wikiId
+          };
+          console.log(newCollaborator);
+          return Collaborator.create(newCollaborator)
+          .then((collaborator) => {
+            callback(null, collaborator);
           })
-          .then((collaborators)=>{
-            if(collaborators.length != 0){
-              return callback(`${req.body.collaborator} is already a collaborator on this wiki.`);
-            }
-            let newCollaborator = {
-              userId: users[0].id,
-              wikiId: req.params.wikiId
-            };
-            return Collaborator.create(newCollaborator)
-            .then((collaborator) => {
-              callback(null, collaborator);
-            })
-            .catch((err) => {
-              callback(err, null);
-            })
-          })
-          .catch((err)=>{
+          .catch((err) => {
             callback(err, null);
           })
         })
-        .catch((err)=>{
-          callback(err, null);
-        })
-    /*
-    User.findOne({
-      where: {
-        username: req.body.collaborator
-      }
-    })
-    .then((user) => {
-      if(!user){
-        return callback("User does not exist")
-      }
-      Collaborator.findOne({
-        where: {
-          userId: user.id,
-          wikiId: req.params.wikiId
-        }
       })
-      .then((collaborator) => {
-        if(collaborator) {
-          console.log('error! This collaborator already exists');
-          return callback('This collaborator is already a collaborator on this wiki.')
-        }
-        let newCollaborator = {
-          userId: user.id,
-          wikiId: req.params.wikiId
-        };
-        console.log(newCollaborator);
-        return Collaborator.create(newCollaborator)
-        .then((collaborator) => {
-          callback(null, collaborator);
-        })
-        .catch((err) => {
-          callback(err, null);
-        })
-      })
-    })
-    */
   },
 
   deleteCollaborator(req, callback){
